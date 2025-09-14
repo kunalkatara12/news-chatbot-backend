@@ -19,3 +19,10 @@ export const getRedisHistory = async (sessionId: string, start?: number, end?: n
 export const resetRedisSession = async (sessionId: string) => {
     await redisClient.del(`session:${sessionId}`);
 }
+// Delete all sessions (for development/testing)
+export const deleteAllSessions = async (userId: string) => {
+    const keys = await redisClient.keys(`session:${userId}:*`);
+    console.log(keys);
+    if (!keys.length) return;
+    await redisClient.del(keys);
+}

@@ -20,6 +20,7 @@
     "@pinecone-database/pinecone": "^6.1.2",
     "axios": "^1.12.1",
     "cheerio": "^1.1.2",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
     "ioredis": "^5.7.0",
@@ -28,6 +29,7 @@
     "xml2js": "^0.6.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/module-alias": "^2.0.4",
     "@types/node": "^24.3.1",

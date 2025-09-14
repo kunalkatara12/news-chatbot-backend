@@ -28,7 +28,7 @@ const getEmbeddings = async (text: string): Promise<number[]> => {
     const configuration = {
         headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${process.env.JINA_API}`
+            'Authorization': `Bearer ${config.JINA_API}`
         }
     };
 

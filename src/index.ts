@@ -2,16 +2,16 @@ import "module-alias/register";
 import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import router from "@/router";
-import { ingest } from "@/utils";
 import { config } from "@/config";
+import cors from "cors";
 // import { redisClient } from "@/config"
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174","*"], credentials: true }));
 const port = config.PORT || 3000;
-
 app.use("/api/v1", router);
 app.get("/", async (_: Request, res: Response) => {
     // test connection

@@ -4,7 +4,7 @@ import { chunkText } from "./chunks.utils";
 import { getEmbeddings, index } from "@/config";
 
 const articles: { id: string; text: string }[] = JSON.parse(
-    fs.readFileSync("news.json", "utf-8")
+    fs.readFileSync("hindu-articles.json", "utf-8")
 );
 
 const BATCH_SIZE = 50;
@@ -29,7 +29,24 @@ const getEmbeddingsWithRetry = async (chunk: string, attempt = 1): Promise<numbe
         return null;
     }
 };
+const uploadOnPinecone = async (id: string, validEmbeddings: {
+    chunk: string;
+    vector: number[];
+}[]) => {
+    // Upload in batches
+    for (let i = 0; i < validEmbeddings.length; i += BATCH_SIZE) {
+        const batch = validEmbeddings.slice(i, i + BATCH_SIZE).map((item, idx) => ({
+            id: `${id}-${i + idx}`, // continuous IDs
+            values: item.vector,
+            metadata: {
+                text: item.chunk,
+                source: id,
+            },
+        }));
 
+        await index.upsert(batch);
+    }
+}
 const processArticle = async (article: { id: string; text: string }) => {
     try {
         const chunks = chunkText(article.text, 1000);
@@ -52,20 +69,8 @@ const processArticle = async (article: { id: string; text: string }) => {
             console.warn(`⚠️ Article ${article.id} has no valid chunks.`);
             return;
         }
-
-        // Upload in batches
-        for (let i = 0; i < validEmbeddings.length; i += BATCH_SIZE) {
-            const batch = validEmbeddings.slice(i, i + BATCH_SIZE).map((item, idx) => ({
-                id: `${article.id}-${i + idx}`, // continuous IDs
-                values: item.vector,
-                metadata: {
-                    text: item.chunk,
-                    source: article.id,
-                },
-            }));
-
-            await index.upsert(batch);
-        }
+        // upload to pinecone
+        await uploadOnPinecone(article.id, validEmbeddings);
 
         console.log(
             `✅ Uploaded article ${article.id} (${validEmbeddings.length}/${chunks.length} chunks)`
@@ -74,7 +79,6 @@ const processArticle = async (article: { id: string; text: string }) => {
         console.error(`❌ Error processing article ${article.id}:`, err.message);
     }
 };
-
 const ingest = async () => {
     console.log("📥 Starting ingestion of", articles.length, "articles...");
 
@@ -84,4 +88,4 @@ const ingest = async () => {
     console.log("🎉 Ingestion completed!");
 };
 
-export { ingest };
+export { ingest,getEmbeddingsWithRetry };
