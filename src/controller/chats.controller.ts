@@ -17,7 +17,7 @@ const chat = async (req: Request, res: Response) => {
         // console.log(`doc: ${JSON.stringify(doc)}`);
 
         // 2️⃣ Collect past history
-        const history = await getRedisHistory(sessionId, -8);
+        const history = await getRedisHistory(sessionId, -28);
 
         // console.log(`history: ${JSON.stringify(history)}`);
         // 3️⃣ Call Gemini
