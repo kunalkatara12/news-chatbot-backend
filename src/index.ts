@@ -10,7 +10,7 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174","https://news-chat.netlify.app/"], credentials: true }));
+app.use(cors({ origin: ["http://localhost:5173", "http://localhost:5174","https://news-chat.netlify.app"], credentials: true }));
 const port = process.env.PORT || 8985;
 app.use("/api/v1", router);
 app.get("/", async (_: Request, res: Response) => {
